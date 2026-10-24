@@ -1,5 +1,6 @@
 import sys
 
+
 def brute_info(file_destination: str) -> str:
     try:
         with open (file_destination, "r", encoding="utf-8") as info:
@@ -47,20 +48,36 @@ def in_key(key: list[str], line: str) -> bool:
             return True
     return False
 
+def take_hub_list(list_brute: list[str]) -> dict[str, dict[str, int | str]]:
+    dict_hub: dict[str, dict[str, str | int]] = {}
+    for lists in list_brute:
+        i = lists.split(" ")
+        typed: str = i[0].replace(":", "")
+        name = i[1]
+        if len(i) >= 3:
+            color_val: str = ""
+            try:
+                x = int(i[2])
+                y = int(i[3])
+                for part in i[4:]:
+                    if "color=" in part:
+                        clean_part = part.replace("[", "").replace("]", "")
+                        if "=" in clean_part:
+                            k, v = clean_part.split("=", 1)
+                            if k == "color":
+                                color_val = v
+                                break
+                dict_hub[name] = {
+                    "type" : typed,
+                    "x" : x,
+                    "y" : y,
+                    "color" : color_val
+                }
+            except Exception as e:
+                print(f"[ERROR]: {e}")
+    return dict_hub
 
-def take_information(list_clean: list[str], key_found: str) -> list[str]:
-    key_content: list[str] = []
-    for i in list_clean:
-        if i.startswith(key_found):
-            key_content = i.split(" ")
-            return key_content
-    return key_content
-
-def parsing() -> None:
-    find_file = sys.argv[1]
-    brute_content = brute_info(find_file)
-
-    clean_content = to_list(brute_content)
+def parsing_hub_and_connection(clean_content: list[str]) -> dict[str, dict[str, str | int]]:
 
     all_key: list[str] = ["nb_drones",
                           "start_hub",
@@ -76,5 +93,16 @@ def parsing() -> None:
         print("Erreur : La configuration du fichier est invalide.", file=sys.stderr)
         sys.exit(1)
 
-    print_tmp(clean_content)
-    print_tmp(take_information(clean_content, "hub"))
+    dic_information: dict[str, dict[str, int | str]] = take_hub_list(clean_content)
+
+    return dic_information
+
+def take_nb_of_drones(part: str) -> int:
+    line = part.split(" ")
+    try:
+        if len(line) == 2:
+            return int(line[1])
+    except Exception:
+        print("Erreur : La configuration du fichier est invalide.", file=sys.stderr)
+        sys.exit(1)
+    return 0
