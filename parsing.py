@@ -1,4 +1,5 @@
 import sys
+import number_parsing
 
 
 def brute_info(file_destination: str) -> str:
@@ -37,8 +38,7 @@ def to_list(content: str) -> list[str]:
             if ch == ":":
                 occurence += 1
         if occurence != 1:
-            print("Erreur : La configuration du fichier est invalide.", file=sys.stderr)
-            sys.exit(1)
+            number_parsing.raise_ERROR("")
 
     return true_config
 
@@ -54,27 +54,48 @@ def take_hub_list(list_brute: list[str]) -> dict[str, dict[str, int | str]]:
         i = lists.split(" ")
         typed: str = i[0].replace(":", "")
         name = i[1]
+        if name in dict_hub:
+            number_parsing.raise_ERROR(f"Duplicate hub name found: '{name}'")
         if len(i) >= 3:
             color_val: str = ""
+            zone: str = "normal"
+            capacity: int = 1
             try:
                 x = int(i[2])
                 y = int(i[3])
                 for part in i[4:]:
-                    if "color=" in part:
+                    if "color=" in part or "zone" in part or "max_drones" in part:
                         clean_part = part.replace("[", "").replace("]", "")
                         if "=" in clean_part:
                             k, v = clean_part.split("=", 1)
                             if k == "color":
                                 color_val = v
-                                break
+                            if k == "zone":
+                                zone = v
+                            if k == "max_drones":
+                                try:
+                                    capacity = int(v)
+                                except Exception as e:
+                                    number_parsing.raise_ERROR("")
                 dict_hub[name] = {
                     "type" : typed,
                     "x" : x,
                     "y" : y,
-                    "color" : color_val
+                    "color" : color_val,
+                    "zone" : zone,
+                    "max_drones" : capacity
                 }
             except Exception as e:
                 print(f"[ERROR]: {e}")
+        elif lists.startswith("nb_drones") or lists.startswith("connection"):
+            if not 2 >= len(i) <= 3:
+                number_parsing.raise_ERROR("")
+            try:
+                ...
+            except Exception :
+                ...
+        else:
+            number_parsing.raise_ERROR("")
     return dict_hub
 
 def parsing_hub_and_connection(clean_content: list[str]) -> dict[str, dict[str, str | int]]:
@@ -106,3 +127,21 @@ def take_nb_of_drones(part: str) -> int:
         print("Erreur : La configuration du fichier est invalide.", file=sys.stderr)
         sys.exit(1)
     return 0
+
+
+def number_of(key: str, dic_information: dict[str, dict[str, int | str]]) -> int:
+    number: int = 0
+    for i in dic_information.values():
+        if i.get("type") == key:
+            number += 1
+    return number
+
+
+def check_x_coordinate(dic_information: dict[str, dict[str, int | str]]) -> None:
+    seen_coordinate = set()
+    for hub_name, hub_data in dic_information.items():
+        coords = hub_data.get("x"), hub_data.get("y")
+
+        if coords in seen_coordinate:
+            number_parsing.raise_ERROR(f"Duplicate coordinates found at hub '{hub_name}': {coords}")
+        seen_coordinate.add(coords)
