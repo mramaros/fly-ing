@@ -18,6 +18,12 @@ def init_and_show_visualizer(all_information: dict[str, dict[str, str | int]], l
         elif kind == "end_hub":
             kwargs["kind"] = "end"
 
+        if "zone" in data:
+            kwargs["zone_type"] = data["zone"]
+
+        if "color" in data and data["color"]:
+            kwargs["color"] = data["color"]
+
         if "max_drones" in data:
             kwargs["max_drones"] = data["max_drones"]
 
