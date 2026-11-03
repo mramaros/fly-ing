@@ -45,3 +45,10 @@ def check_in_connect_and_file(connection: list[list[str]], all_hub: dict[str, di
 
         if hubs2 not in all_hub:
             raise_ERROR(f"{hubs1} not in your hub")
+
+def constraining_value(all_hub: dict[str, dict[str, str | int]]) -> None:
+    for value in all_hub.values():
+        zone_content = value.get("zone")
+        valide_content = ("normal", "restricted", "blocked", "priority")
+        if zone_content not in valide_content:
+            raise_ERROR("Zone type ERROR")

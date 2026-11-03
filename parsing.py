@@ -1,5 +1,5 @@
 import sys
-import number_parsing
+import constraint_parsing
 
 
 def brute_info(file_destination: str) -> str:
@@ -38,7 +38,7 @@ def to_list(content: str) -> list[str]:
             if ch == ":":
                 occurence += 1
         if occurence != 1:
-            number_parsing.raise_ERROR("")
+            constraint_parsing.raise_ERROR("")
 
     return true_config
 
@@ -55,7 +55,7 @@ def take_hub_list(list_brute: list[str]) -> dict[str, dict[str, int | str]]:
         typed: str = i[0].replace(":", "")
         name = i[1]
         if name in dict_hub:
-            number_parsing.raise_ERROR(f"Duplicate hub name found: '{name}'")
+            constraint_parsing.raise_ERROR(f"Duplicate hub name found: '{name}'")
         if len(i) >= 3:
             color_val: str = ""
             zone: str = "normal"
@@ -76,7 +76,7 @@ def take_hub_list(list_brute: list[str]) -> dict[str, dict[str, int | str]]:
                                 try:
                                     capacity = int(v)
                                 except Exception as e:
-                                    number_parsing.raise_ERROR("")
+                                    constraint_parsing.raise_ERROR("")
                 dict_hub[name] = {
                     "type" : typed,
                     "x" : x,
@@ -89,13 +89,13 @@ def take_hub_list(list_brute: list[str]) -> dict[str, dict[str, int | str]]:
                 print(f"[ERROR]: {e}")
         elif lists.startswith("nb_drones") or lists.startswith("connection"):
             if not 2 >= len(i) <= 3:
-                number_parsing.raise_ERROR("")
+                constraint_parsing.raise_ERROR("")
             try:
                 ...
             except Exception :
                 ...
         else:
-            number_parsing.raise_ERROR("")
+            constraint_parsing.raise_ERROR("")
     return dict_hub
 
 def parsing_hub_and_connection(clean_content: list[str]) -> dict[str, dict[str, str | int]]:
@@ -143,5 +143,5 @@ def check_x_coordinate(dic_information: dict[str, dict[str, int | str]]) -> None
         coords = hub_data.get("x"), hub_data.get("y")
 
         if coords in seen_coordinate:
-            number_parsing.raise_ERROR(f"Duplicate coordinates found at hub '{hub_name}': {coords}")
+            constraint_parsing.raise_ERROR(f"Duplicate coordinates found at hub '{hub_name}': {coords}")
         seen_coordinate.add(coords)

@@ -172,7 +172,7 @@ class City:
 class Rain:
     """Thin rain streaks falling over the city."""
 
-    def __init__(self, layout: Layout, count: int = 800) -> None:
+    def __init__(self, layout: Layout, count: int = 80) -> None:
         self._rng = random.Random(3)
         self._hx = layout.half_x + 50.0
         self._hz = layout.half_z + 50.0

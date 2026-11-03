@@ -1,6 +1,6 @@
 import sys
 import parsing
-from number_parsing import check_in_connect_and_file, check_number_validate, connection_parsing
+from constraint_parsing import check_in_connect_and_file, check_number_validate, connection_parsing, constraining_value
 import pprint
 from graphical_design import init_and_show_visualizer
 
@@ -20,6 +20,7 @@ if __name__ == "__main__":
     parsing.check_x_coordinate(all_information)
     list_connection = connection_parsing(clean_content)
     check_in_connect_and_file(list_connection, all_information)
+    constraining_value(all_information)
 
     print(list_connection)
     pprint.pprint(all_information)
