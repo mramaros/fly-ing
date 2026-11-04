@@ -1,6 +1,6 @@
 import viewer3d
 
-def init_and_show_visualizer(all_information: dict[str, dict[str, str | int]], list_connection: list[list[str]], moves=None) -> None:
+def init_and_show_visualizer(all_information: dict[str, dict[str, str | int]], list_connection: list[list[str | int]], moves=None) -> None:
     if not all_information:
         return
 
@@ -28,7 +28,11 @@ def init_and_show_visualizer(all_information: dict[str, dict[str, str | int]], l
             kwargs["max_drones"] = data["max_drones"]
 
         viewer3d.place_point(name, data["x"], data["y"], **kwargs)
-    viewer3d.place_connect(list_connection)
+    
+    # Si viewer3d.place_connect attend des listes de paires [hub1, hub2], 
+    # on peut lui passer une vue filtrée ou s'adapter :
+    connections_for_viewer = [[conn[0], conn[1]] for conn in list_connection]
+    viewer3d.place_connect(connections_for_viewer)
 
     if moves is None:
         moves = []

@@ -1,3 +1,5 @@
+from os import linesep
+from os.path import split
 import sys
 import constraint_parsing
 
@@ -56,7 +58,7 @@ def take_hub_list(list_brute: list[str]) -> dict[str, dict[str, int | str]]:
         name = i[1]
         if name in dict_hub:
             constraint_parsing.raise_ERROR(f"Duplicate hub name found: '{name}'")
-        if len(i) >= 3:
+        if len(i) >= 3 and not lists.startswith("connection"):
             color_val: str = ""
             zone: str = "normal"
             capacity: int = 1
@@ -88,15 +90,16 @@ def take_hub_list(list_brute: list[str]) -> dict[str, dict[str, int | str]]:
             except Exception as e:
                 print(f"[ERROR]: {e}")
         elif lists.startswith("nb_drones") or lists.startswith("connection"):
-            if not 2 >= len(i) <= 3:
+            if 2 <= len(i) >= 4:
+                print(lists)
                 constraint_parsing.raise_ERROR("")
-            try:
-                ...
-            except Exception :
-                ...
         else:
             constraint_parsing.raise_ERROR("")
     return dict_hub
+
+
+
+
 
 def parsing_hub_and_connection(clean_content: list[str]) -> dict[str, dict[str, str | int]]:
 

@@ -1,4 +1,0 @@
-D1-junction D2-junction
-D1-path_a D2-path_b D3-junction D4-junction
-D1-goal D2-goal D3-path_a D4-path_b
-D3-goal D4-goal
