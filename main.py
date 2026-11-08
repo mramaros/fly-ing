@@ -9,6 +9,7 @@ from constraint_parsing import (
 )
 from graphical_design import init_and_show_visualizer
 import parsing
+from path_finding import manager_path
 
 
 if __name__ == "__main__":
@@ -32,11 +33,12 @@ if __name__ == "__main__":
     check_number_validate(clean_content, number_of_drones)
     parsing.check_x_coordinate(all_information)
 
-    list_connection = connection_parsing(clean_content)
+    list_connection: list[list[str | int]]= connection_parsing(clean_content)
     check_in_connect_and_file(list_connection, all_information)
     constraining_value(all_information)
 
+    manager_path(all_information, list_connection)
     print(list_connection)
     pprint.pprint(all_information)
 
-    init_and_show_visualizer(all_information, list_connection)
+

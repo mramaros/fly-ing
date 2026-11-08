@@ -12,8 +12,8 @@ def check_number_validate(clean_content: list[str], nb_drones: int) -> None:
     if nb_drones <= 0:
         raise_ERROR("number of drones must > 0")
 
-def connection_parsing(clean_content: list[str]) -> list[list[str]]:
-    list_connection: list[list[str]] = []
+def connection_parsing(clean_content: list[str]) -> list[list[str | int]]:
+    list_connection: list[list[str | int]] = []
     seen_connection = set()
     for line in clean_content:
         if line.startswith("connection:"):
@@ -34,9 +34,8 @@ def connection_parsing(clean_content: list[str]) -> list[list[str]]:
 
             seen_connection.add(connect_tuple)
 
-            # Analyse de la capacité maximale de la liaison (max_link_capacity)
             max_link_capacity = 1
-            v = ""
+            v = "1"
             for part in parts[2:]:
                 if "max_link_capacity=" in part:
                     clean_part = part.replace("[", "").replace("]", "")
@@ -50,11 +49,11 @@ def connection_parsing(clean_content: list[str]) -> list[list[str]]:
                             except ValueError:
                                 raise_ERROR("Invalid max_link_capacity value")
 
-            list_connection.append([hubs1, hubs2, v])
+            list_connection.append([hubs1, hubs2, max_link_capacity])
 
     return list_connection
 
-def check_in_connect_and_file(connection: list[list[str]], all_hub: dict[str, dict[str, str | int]]) -> None:
+def check_in_connect_and_file(connection: list[list[str | int]], all_hub: dict[str, dict[str, str | int]]) -> None:
     for conn in connection:
         hubs1, hubs2 = conn[0], conn[1]
 
