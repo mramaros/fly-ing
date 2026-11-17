@@ -33,7 +33,7 @@ if __name__ == "__main__":
     check_number_validate(clean_content, number_of_drones)
     parsing.check_x_coordinate(all_information)
 
-    list_connection: list[list[str | int]]= connection_parsing(clean_content)
+    list_connection: list[list[str]]= connection_parsing(clean_content)
     check_in_connect_and_file(list_connection, all_information)
     constraining_value(all_information)
 
@@ -41,4 +41,4 @@ if __name__ == "__main__":
     print(list_connection)
     pprint.pprint(all_information)
 
-
+    init_and_show_visualizer(all_information, list_connection)
