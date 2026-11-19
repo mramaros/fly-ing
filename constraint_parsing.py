@@ -1,6 +1,7 @@
 import sys
+from typing import NoReturn
 
-def raise_ERROR(message: str):
+def raise_ERROR(message: str) -> NoReturn:
     print(f"[ERROR] : Config not valid.\n{message}", file=sys.stderr)
     sys.exit(1)
 

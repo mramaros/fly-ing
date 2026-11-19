@@ -1,4 +1,3 @@
-import pprint
 import sys
 from constraint_parsing import (
     check_in_connect_and_file,
@@ -8,8 +7,8 @@ from constraint_parsing import (
     raise_ERROR,
 )
 from graphical_design import init_and_show_visualizer
-import parsing
 from path_finding import manager_path
+import parsing
 
 
 if __name__ == "__main__":
@@ -33,12 +32,12 @@ if __name__ == "__main__":
     check_number_validate(clean_content, number_of_drones)
     parsing.check_x_coordinate(all_information)
 
-    list_connection: list[list[str]]= connection_parsing(clean_content)
+    list_connection: list[list[str | int]] = connection_parsing(clean_content)
     check_in_connect_and_file(list_connection, all_information)
     constraining_value(all_information)
 
-    manager_path(all_information, list_connection)
+    generale_move = manager_path(all_information, list_connection, number_of_drones)
     print(list_connection)
-    pprint.pprint(all_information)
+    print(generale_move)
 
-    init_and_show_visualizer(all_information, list_connection)
+    init_and_show_visualizer(all_information, list_connection, generale_move)
