@@ -129,8 +129,9 @@ class Playback:
     DURATION = 1.8
     PAUSE = 0.6
 
-    def __init__(self, total: int) -> None:
+    def __init__(self, total: int, flying: list[bool] | None = None) -> None:
         self.total = total
+        self.flying = flying or [False] * (total + 1)
         self.cur = 0
         self.target = 0
         self.t = 1.0
@@ -147,10 +148,10 @@ class Playback:
         """Turn number displayed in the HUD."""
         return self.target if self.busy else self.cur
 
-    def ease(self) -> float:
-        """Smoothed progress of the running animation."""
-        t = min(self.t, 1.0)
-        return 2 * t * t if t < 0.5 else 1 - (-2 * t + 2) ** 2 / 2
+    @property
+    def progress(self) -> float:
+        """Linear progress (0..1) of the running turn animation."""
+        return min(self.t, 1.0)
 
     def step(self, delta: int) -> None:
         """Start moving to the next or previous turn."""
@@ -178,16 +179,26 @@ class Playback:
         self.target = min(self.total, self.cur + 1) if frac else self.cur
         self.t = frac if frac else 1.0
 
+    def _continue_flight(self, spare: float) -> None:
+        """Chain the next turn at once while a drone is on a connection."""
+        if self.cur < self.total:
+            self.step(1)
+            self.t = spare / self.DURATION
+
     def update(self, dt: float) -> None:
         """Advance the animation clock."""
         if self.busy:
             self.t += dt / self.DURATION
             if self.t >= 1.0:
+                spare = (self.t - 1.0) * self.DURATION
                 self.cur, self.t = self.target, 1.0
                 self._wait = 0.0
+                if self.playing and self.flying[self.cur]:
+                    self._continue_flight(spare)
         elif self.playing:
             self._wait += dt
-            if self._wait >= self.PAUSE:
+            pause = 0.0 if self.flying[self.cur] else self.PAUSE
+            if self._wait >= pause:
                 if self.cur < self.total:
                     self.step(1)
                 else:
@@ -210,7 +221,9 @@ class Viewer:
         self.rain = Rain(self.layout)
         self.zones = ZoneRenderer(drone_map, self.layout, self.text)
         self.fleet = Fleet(self.layout, replay, self.text)
-        self.play = Playback(replay.turns)
+        flying = [any(loc.link is not None for loc in state.values())
+                  for state in replay.states]
+        self.play = Playback(replay.turns, flying)
         self.cam = OrbitCamera(dist=self.layout.camera_distance)
         self.cam.limit = (self.layout.half_x + 25.0,
                           self.layout.half_z + 25.0)
@@ -398,7 +411,7 @@ class Viewer:
         pb = self.play
         busy = pb.busy
         self.fleet.draw(pb.cur, pb.target if busy else pb.cur,
-                        pb.ease() if busy else 1.0, dt, now, right, up)
+                        pb.progress if busy else 1.0, dt, now, right, up)
         self._draw_marker(dt)
         self.rain.draw()
         self._hud()
