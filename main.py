@@ -37,7 +37,7 @@ if __name__ == "__main__":
     constraining_value(all_information)
 
     generale_move = manager_path(all_information, list_connection, number_of_drones)
-    print(list_connection)
-    print(generale_move)
+    for turn_moves in generale_move:
+        print(turn_moves)
 
     init_and_show_visualizer(all_information, list_connection, generale_move)

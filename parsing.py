@@ -6,16 +6,10 @@ import constraint_parsing
 
 def brute_info(file_destination: str) -> str:
     try:
-        with open (file_destination, "r", encoding="utf-8") as info:
-            content = info.read()
-            return content
+        with open(file_destination, "r", encoding="utf-8") as info:
+            return info.read()
     except FileNotFoundError:
-        print("FileNotFoundError")
-    return ""
-
-def print_tmp(list_pt: list[str]) -> None:
-    for i in list_pt:
-        print(i)
+        return ""
 
 def to_list(content: str) -> list[str]:
     list_clean: list[str] = content.splitlines()
@@ -88,10 +82,9 @@ def take_hub_list(list_brute: list[str]) -> dict[str, dict[str, int | str]]:
                     "max_drones" : capacity
                 }
             except Exception as e:
-                print(f"[ERROR]: {e}")
+                constraint_parsing.raise_ERROR(str(e))
         elif lists.startswith("nb_drones") or lists.startswith("connection"):
             if 2 <= len(i) >= 4:
-                print(lists)
                 constraint_parsing.raise_ERROR("")
         else:
             constraint_parsing.raise_ERROR("")
@@ -114,8 +107,7 @@ def parsing_hub_and_connection(clean_content: list[str]) -> dict[str, dict[str, 
         result_bool = in_key(all_key, line)
         result.append(result_bool)
     if not all(result):
-        print("Erreur : La configuration du fichier est invalide.", file=sys.stderr)
-        sys.exit(1)
+        constraint_parsing.raise_ERROR("La configuration du fichier est invalide.")
 
     dic_information: dict[str, dict[str, int | str]] = take_hub_list(clean_content)
 
@@ -127,8 +119,7 @@ def take_nb_of_drones(part: str) -> int:
         if len(line) == 2:
             return int(line[1])
     except Exception:
-        print("Erreur : La configuration du fichier est invalide.", file=sys.stderr)
-        sys.exit(1)
+        constraint_parsing.raise_ERROR("Le nombre de drones est invalide.")
     return 0
 
 

@@ -1,0 +1,24 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "/^python3 -c 'from path_finding import manager_path; info = \\{\"start\": \\{\"type\": \"start_hub\", \"zone\": \"normal\"\\}, \"plain\": \\{\"type\": \"hub\", \"zone\": \"normal\"\\}, \"preferred_a\": \\{\"type\": \"hub\", \"zone\": \"priority\"\\}, \"preferred_b\": \\{\"type\": \"hub\", \"zone\": \"priority\"\\}, \"goal\": \\{\"type\": \"end_hub\", \"zone\": \"normal\"\\}\\}; links = \\[\\[\"start\", \"plain\"\\], \\[\"plain\", \"goal\"\\], \\[\"start\", \"preferred_a\"\\], \\[\"preferred_a\", \"preferred_b\"\\], \\[\"preferred_b\", \"goal\"\\]\\]; moves = manager_path\\(info, links, 1\\); print\\(moves\\); assert moves and \"D1-plain\" in moves\\[0\\], \"Priority must not outweigh a shorter route\"'$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^python3 -m py_compile main\\.py$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^timeout 3 \\.venv/bin/python main\\.py \"maps/hard/03_ultimate_challenge\\.txt\" 2>&1 \\| tee /tmp/fly_output_fixed\\.txt >/dev/null; python3 -c 'import re\nlines=open\\(\"/tmp/fly_output_fixed\\.txt\", encoding=\"utf-8\"\\)\\.read\\(\\)\\.splitlines\\(\\)\nbad=\\[\\]\nfor n,line in enumerate\\(lines,1\\):\n    ids=re\\.findall\\(r\"D\\(\\\\d\\+\\)-\", line\\)\n    repeated=sorted\\(\\{d for d in ids if ids\\.count\\(d\\)>1\\}\\)\n    if repeated: bad\\.append\\(\\(n, repeated, line\\)\\)\nprint\\(\"duplicate_moves:\", bad\\)\nprint\\(\"turn_lines:\", sum\\(bool\\(re\\.match\\(r\"\\^\\(\\?:D\\\\d\\+-\\[\\^ \\]\\+\\)\\(\\?: D\\\\d\\+-\\[\\^ \\]\\+\\)\\*\\$\", line\\)\\) for line in lines\\)\\)'$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^python3 -m py_compile path_finding\\.py$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^python3 -m py_compile path_finding\\.py viewer3d/replay\\.py$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
+}

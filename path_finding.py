@@ -20,8 +20,7 @@ class connectionManager:
 
     def show(self, zone_name: str) -> None:
         if zone_name in self.connection:
-            voisins_info = [f"{z.name} (capacité: {cap})" for z, cap in self.connection[zone_name]]
-            print(f"Connexions de {zone_name} : {voisins_info}")
+            return
 
     def dikstra_path(self, start_hub: str, end_hub: str) -> list[list[str]]:
         if start_hub not in self.zone or end_hub not in self.zone:
@@ -85,7 +84,14 @@ class connectionManager:
                 if new_cost <= max_cost:
                     stack.append((neighbor_name, path + [neighbor_name], new_cost))
 
-        near_optimal.sort(key=lambda route: (len(route), route))
+        near_optimal.sort(
+            key=lambda route: (
+                sum(2 if self.zone[name].zone_type == "restricted" else 1 for name in route[1:]),
+                -sum(self.zone[name].zone_type == "priority" for name in route[1:]),
+                len(route),
+                route,
+            )
+        )
         if near_optimal:
             return near_optimal
         return shortest_paths
@@ -189,6 +195,8 @@ def manage_drones(list_path: list[list[str]], nb_drones: int, all_information: d
         turn_moves: list[str] = []
         turn_link_usage: dict[tuple[str, str], int] = {}
 
+        moved_drones: set[str] = set()
+
         # Restricted drones finish only when their target zone has room.
         for d_name in list(restricted_transit):
             transit = restricted_transit[d_name]
@@ -206,6 +214,7 @@ def manage_drones(list_path: list[list[str]], nb_drones: int, all_information: d
             zone_occupancy[target] = zone_occupancy.get(target, 0) + 1
             drone_zone[d_name] = target
             restricted_transit.pop(d_name)
+            moved_drones.add(d_name)
             turn_moves.append(f"{d_name}-{target}")
 
         # Most advanced drones first prevent bottleneck starvation.
@@ -213,6 +222,7 @@ def manage_drones(list_path: list[list[str]], nb_drones: int, all_information: d
             (
                 d_name for d_name in drone_zone
                 if d_name not in restricted_transit
+                and d_name not in moved_drones
                 and drone_zone[d_name] != end_hub
             ),
             key=lambda d_name: drone_steps[d_name],
@@ -222,7 +232,7 @@ def manage_drones(list_path: list[list[str]], nb_drones: int, all_information: d
         for d_name in ordered_drones:
             current = drone_zone[d_name]
 
-            candidates: list[tuple[int, int, int, str, int]] = []
+            candidates: list[tuple[int, int, int, int, str, int]] = []
             assigned_route = drone_route[d_name]
 
             route_indexes = [assigned_route]
@@ -256,17 +266,32 @@ def manage_drones(list_path: list[list[str]], nb_drones: int, all_information: d
                 if link_used >= link_limit:
                     continue
 
-                remaining = len(route) - position - 1
+                remaining_zones = route[position + 1:]
+                remaining_cost = sum(
+                    2 if zone_types.get(zone) == "restricted" else 1
+                    for zone in remaining_zones
+                )
+                remaining_priorities = sum(
+                    zone_types.get(zone) == "priority"
+                    for zone in remaining_zones
+                )
                 priority_bonus = 0 if zone_types.get(next_zone) == "priority" else 1
                 free_capacity = zone_limit - zone_used
-                candidates.append((remaining, priority_bonus, -free_capacity, next_zone, route_index))
+                candidates.append((
+                    remaining_cost,
+                    -remaining_priorities,
+                    priority_bonus,
+                    -free_capacity,
+                    next_zone,
+                    route_index,
+                ))
 
             if not candidates:
                 continue
 
             candidates.sort()
-            next_zone = candidates[0][3]
-            drone_route[d_name] = candidates[0][4]
+            next_zone = candidates[0][4]
+            drone_route[d_name] = candidates[0][5]
 
             link_key = (current, next_zone)
             if link_key not in connection_capacities:
