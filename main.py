@@ -7,9 +7,8 @@ from constraint_parsing import (
     raise_ERROR,
 )
 from graphical_design import init_and_show_visualizer
-from path_finding import manager_path
+from manage_path import manager_path
 import parsing
-
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
@@ -36,7 +35,9 @@ if __name__ == "__main__":
     check_in_connect_and_file(list_connection, all_information)
     constraining_value(all_information)
 
-    generale_move = manager_path(all_information, list_connection, number_of_drones)
+    generale_move = manager_path(
+        all_information, list_connection, number_of_drones
+    )
     for turn_moves in generale_move:
         print(turn_moves)
 

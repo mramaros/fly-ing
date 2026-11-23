@@ -8,13 +8,19 @@ def init_and_show_visualizer(
     list_connection: list[list[str | int]],
     moves: list[str] | None = None,
 ) -> None:
+    """Initialize the 3D visualizer and display configuration data.
+
+    Args:
+        all_information: Hub coordinates and attributes.
+        list_connection: Hub connections and maximum link capacities.
+        moves: Optional movement list displayed in the visualizer.
+
+    """
     if not all_information:
         return
 
-    max_x: int = max(int(data["x"])
-                     for data in all_information.values())
-    max_y: int = max(int(data["y"])
-                     for data in all_information.values())
+    max_x: int = max(int(data["x"]) for data in all_information.values())
+    max_y: int = max(int(data["y"]) for data in all_information.values())
 
     viewer3d.init(max_x + 1, max_y + 1)
 
