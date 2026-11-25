@@ -1,3 +1,5 @@
+"""Connect parsed map data to the 2D visualizer."""
+
 from typing import Any
 
 import viewer2d

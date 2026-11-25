@@ -1,3 +1,5 @@
+"""Validate a map, compute drone paths, and launch the visualizer."""
+
 import sys
 from constraint_parsing import (
     check_in_connect_and_file,
@@ -28,6 +30,8 @@ if __name__ == "__main__":
             nb_brute = i.replace(":", "")
 
     number_of_drones = parsing.take_nb_of_drones(nb_brute)
+    if number_of_drones >= 2000:
+        raise_ERROR("Sorry, 2000 is my maximal capacity for visualization")
     check_number_validate(clean_content, number_of_drones)
     parsing.check_x_coordinate(all_information)
 

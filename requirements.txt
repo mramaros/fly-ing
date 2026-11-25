@@ -1,5 +1,4 @@
 numpy
 pygame
-PyOpenGL
 flake8
 mypy
