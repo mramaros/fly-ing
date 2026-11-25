@@ -1,14 +1,17 @@
+"""Parse map configuration text into structured hub information."""
+
 import constraint_parsing
 
 
 def brute_info(file_destination: str) -> str:
     """Read the content of the specified file and return it as a string.
+
     Args:
         file_destination: The path to the file to be read.
+
     Returns:
-        The content of the file as a string.
-    Raises:
-        FileNotFoundError: If the specified file does not exist.
+        The file content, or an empty string if the file is missing.
+
     """
     try:
         with open(file_destination, "r", encoding="utf-8") as info:
@@ -55,12 +58,15 @@ def to_list(content: str) -> list[str]:
 
 
 def in_key(key: list[str], line: str) -> bool:
-    """Check if the first part of a line (before the colon) is in a list of keys.
+    """Check whether the part before the colon is in a list of keys.
+
     Args:
-        key: A list of valid keys.
-        line: A line from the configuration file.
+        key: Valid configuration keys.
+        line: One configuration line.
+
     Returns:
-        True if the first part of the line is in the list of keys, False otherwise.
+        True if the line starts with a valid key.
+
     """
     parts = line.split()
     if not parts:
@@ -71,14 +77,15 @@ def in_key(key: list[str], line: str) -> bool:
 
 
 def take_hub_list(list_brute: list[str]) -> dict[str, dict[str, int | str]]:
-    """Parse the cleaned lines from the configuration file and extract hub information.
+    """Parse cleaned configuration lines into hub information.
+
     Args:
-        list_brute: A list of cleaned lines from the configuration file.
+        list_brute: Cleaned lines from the configuration file.
+
     Returns:
-        A dictionary where each key is a hub name and the value is another dictionary containing hub attributes
-        such as type, coordinates, color, zone, and maximum number of drones.
-    Raises:
-        ValueError: If the hub information is invalid or if there are duplicate hub names."""
+        A dictionary mapping hub names to their attributes.
+
+    """
     dict_hub: dict[str, dict[str, str | int]] = {}
     valid_hub_types = {"start_hub", "end_hub", "hub"}
 
@@ -149,11 +156,15 @@ def take_hub_list(list_brute: list[str]) -> dict[str, dict[str, int | str]]:
 def parsing_hub_and_connection(
     clean_content: list[str],
 ) -> dict[str, dict[str, str | int]]:
-    """Parse the cleaned lines from the configuration file and extract hub information.
+    """Validate configuration keys and extract hub information.
+
     Args:
-        clean_content: A list of cleaned lines from the configuration file.
-    Returns: A dictionary where each key is a hub name and the value
-            is another dictionary containing hub attributes"""
+        clean_content: Cleaned lines from the configuration file.
+
+    Returns:
+        A dictionary mapping hub names to their attributes.
+
+    """
     all_key: list[str] = [
         "nb_drones",
         "start_hub",
@@ -179,10 +190,13 @@ def parsing_hub_and_connection(
 
 def take_nb_of_drones(part: str) -> int:
     """Extract the number of drones from a configuration line.
+
     Args:
-        part: A line from the configuration file that specifies the number of drones.
+        part: A line containing the drone count.
+
     Returns:
-        The number of drones specified in the line.
+        The number of drones specified by the line.
+
     """
     line = part.split()
     if len(line) != 2:
@@ -197,12 +211,15 @@ def take_nb_of_drones(part: str) -> int:
 def number_of(
     key: str, dic_information: dict[str, dict[str, int | str]]
 ) -> int:
-    """Count the number of hubs of a specific type in the hub information dictionary.
+    """Count hubs that match a given type.
+
     Args:
-        key: The type of hub to count (e.g., "start_hub", "end_hub").
-        dic_information: A dictionary containing hub information.
+        key: The hub type to count, such as ``start_hub`` or ``end_hub``.
+        dic_information: Hub information keyed by hub name.
+
     Returns:
-        The count of hubs of the specified type.
+        The number of hubs matching ``key``.
+
     """
     number: int = 0
     for i in dic_information.values():
@@ -215,10 +232,10 @@ def check_x_coordinate(
     dic_information: dict[str, dict[str, int | str]],
 ) -> None:
     """Check for duplicate coordinates in the hub information dictionary.
+
     Args:
-        dic_information: A dictionary containing hub information.
-    Raises:
-        ValueError: If duplicate coordinates are found in the hub information.
+        dic_information: Hub information keyed by hub name.
+
     """
     seen_coordinate = set()
     for hub_name, hub_data in dic_information.items():

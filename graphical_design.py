@@ -1,6 +1,6 @@
 from typing import Any
 
-import viewer3d
+import viewer2d
 
 
 def init_and_show_visualizer(
@@ -8,7 +8,7 @@ def init_and_show_visualizer(
     list_connection: list[list[str | int]],
     moves: list[str] | None = None,
 ) -> None:
-    """Initialize the 3D visualizer and display configuration data.
+    """Initialize the visualizer and display configuration data.
 
     Args:
         all_information: Hub coordinates and attributes.
@@ -22,7 +22,7 @@ def init_and_show_visualizer(
     max_x: int = max(int(data["x"]) for data in all_information.values())
     max_y: int = max(int(data["y"]) for data in all_information.values())
 
-    viewer3d.init(max_x + 1, max_y + 1)
+    viewer2d.init(max_x + 1, max_y + 1)
 
     for name, data in all_information.items():
         kind = str(data.get("type", "hub"))
@@ -42,13 +42,13 @@ def init_and_show_visualizer(
         if "max_drones" in data:
             kwargs["max_drones"] = int(data["max_drones"])
 
-        viewer3d.place_point(name, int(data["x"]), int(data["y"]), **kwargs)
+        viewer2d.place_point(name, int(data["x"]), int(data["y"]), **kwargs)
 
     connections_for_viewer = [
         [str(conn[0]), str(conn[1])] for conn in list_connection
     ]
-    viewer3d.place_connect(connections_for_viewer)
+    viewer2d.place_connect(connections_for_viewer)
 
     if moves is None:
         moves = []
-    viewer3d.show(moves)
+    viewer2d.show(moves)
