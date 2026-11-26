@@ -14,6 +14,7 @@ debug:
 
 clean:
 	find . -type d -name '__pycache__' -exec rm -rf {} +
+	rm -rf .mypy_cache
 
 lint:
 	$(PYTHON) -m flake8 .
