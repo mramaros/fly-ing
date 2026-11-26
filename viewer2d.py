@@ -16,14 +16,23 @@ class Point:
     """A named place of the map."""
 
     def __init__(
-        self, name: str, x: int, y: int, kind: str, color: str | None
+        self,
+        name: str,
+        x: int,
+        y: int,
+        kind: str,
+        color: str | None,
+        max_drones: int = 1,
+        zone_type: str = "normal",
     ) -> None:
-        """Store the name, the coordinates, the kind and the color."""
+        """Store a zone's identity, coordinates, type and capacities."""
         self.name = name
         self.x = x
         self.y = y
         self.kind = kind
         self.color = color
+        self.max_drones = max_drones
+        self.zone_type = zone_type
 
 
 class MapData:
@@ -86,12 +95,17 @@ class Replay:
         self.positions: dict[str, Position] = {}
         self.states: list[dict[str, Position]] = []
         count = self._count_drones(moves, nb_drones)
+        self.nb_drones = count
+        self.zone_positions: dict[str, str | None] = {}
+        self.zone_states: list[dict[str, str | None]] = []
         self._place_drones_on_start(count)
         self.states.append(dict(self.positions))
+        self.zone_states.append(dict(self.zone_positions))
         for turn in moves:
             for token in turn.split():
                 self._apply_token(token)
             self.states.append(dict(self.positions))
+            self.zone_states.append(dict(self.zone_positions))
 
     @staticmethod
     def _count_drones(moves: list[str], nb_drones: int) -> int:
@@ -111,7 +125,9 @@ class Replay:
             return
         start = self.map_data.points[start_name]
         for number in range(1, count + 1):
-            self.positions[f"D{number}"] = (float(start.x), float(start.y))
+            drone = f"D{number}"
+            self.positions[drone] = (float(start.x), float(start.y))
+            self.zone_positions[drone] = start_name
 
     def _apply_token(self, token: str) -> None:
         """Apply one move: D<ID>-<zone> or D<ID>-<zone1>-<zone2>."""
@@ -122,6 +138,7 @@ class Replay:
         if destination in points:
             target = points[destination]
             self.positions[drone] = (float(target.x), float(target.y))
+            self.zone_positions[drone] = destination
             return
         ends = destination.split("-", 1)
         if len(ends) == 2 and ends[0] in points and ends[1] in points:
@@ -130,6 +147,7 @@ class Replay:
             middle_x = (source.x + target.x) / 2
             middle_y = (source.y + target.y) / 2
             self.positions[drone] = (middle_x, middle_y)
+            self.zone_positions[drone] = None
 
 
 _map_data = MapData()
@@ -152,11 +170,12 @@ def place_point(
 ) -> None:
     """Add a named point at the given coordinates.
 
-    zone_type and max_drones are accepted to keep the same call as the 3D
-    viewer, but the 2D viewer does not draw them.
+    zone_type is accepted to keep the same call as the 3D viewer.
     """
     _map_data.check_ready()
-    _map_data.add_point(Point(name, x, y, kind, color))
+    _map_data.add_point(
+        Point(name, x, y, kind, color, max_drones, zone_type)
+    )
 
 
 def place_connect(list_connection: list[list[str]]) -> None:
