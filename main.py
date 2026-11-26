@@ -1,18 +1,29 @@
 """Validate a map, compute drone paths, and launch the visualizer."""
 
+import importlib
 import sys
-from constraint_parsing import (
-    check_in_connect_and_file,
-    check_number_validate,
-    connection_parsing,
-    constraining_value,
-    raise_ERROR,
-)
-from graphical_design import init_and_show_visualizer
-from manage_path import manager_path
-import parsing
 
-if __name__ == "__main__":
+
+def main() -> None:
+    """Run the map solver after checking its visualization dependency."""
+    try:
+        importlib.import_module("pygame")
+    except ImportError:
+        raise SystemExit(
+            "Error: pygame is required. Install it with 'pip install pygame'."
+        ) from None
+
+    from constraint_parsing import (
+        check_in_connect_and_file,
+        check_number_validate,
+        connection_parsing,
+        constraining_value,
+        raise_ERROR,
+    )
+    from graphical_design import init_and_show_visualizer
+    from manage_path import manager_path
+    import parsing
+
     if len(sys.argv) != 2:
         raise_ERROR("usage: python3 main.py <maps>")
 
@@ -46,3 +57,7 @@ if __name__ == "__main__":
         print(turn_moves)
 
     init_and_show_visualizer(all_information, list_connection, generale_move)
+
+
+if __name__ == "__main__":
+    main()
