@@ -1,5 +1,7 @@
 """Pygame interface for the 2D fly-in map viewer."""
 
+import colorsys
+
 import pygame
 
 from viewer2d import MapData, Point, Replay
@@ -223,6 +225,8 @@ class Viewer:
     def _point_color(point: Point) -> Color:
         """Return the color asked by the user, or one chosen by the kind."""
         if point.color is not None:
+            if point.color.lower() == "rainbow":
+                return Viewer._rainbow_color(pygame.time.get_ticks())
             try:
                 color = pygame.Color(point.color)
                 return (color.r, color.g, color.b)
@@ -233,6 +237,13 @@ class Viewer:
         if point.kind == "end":
             return END_COLOR
         return DEFAULT_POINT_COLOR
+
+    @staticmethod
+    def _rainbow_color(elapsed_ms: int) -> Color:
+        """Convert a cycling rainbow hue into an RGB color."""
+        hue = (elapsed_ms % 3600) / 3600
+        red, green, blue = colorsys.hsv_to_rgb(hue, 1.0, 1.0)
+        return (round(red * 255), round(green * 255), round(blue * 255))
 
     def _draw_points(self) -> None:
         """Draw a circle and the name of each point."""
